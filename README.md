@@ -11,13 +11,17 @@ index.html          # home — markup + runtime de componentes + hydrate.js + fo
 hydrate.js          # capa de hidratación: aplica el contenido del CMS sobre el home
 content.spec.json   # modelo de contenido (fuente única que consumen hydrate.js y /admin)
 admin/index.html    # panel de administración (login + editor de contenido + bandeja)
-api/                # funciones serverless (config, content, contact, messages, instagram)
-lib/                # helpers de servidor (supabase, auth)
-supabase/schema.sql # esquema de la base (tablas, RLS, storage)
+api/                # funciones serverless (login, logout, session, content, contact, messages, upload, instagram)
+lib/                # helpers de servidor (db, auth, http)
+db/schema.sql       # esquema de Vercel Postgres
+scripts/            # utilidades (hash-password)
 assets/             # imágenes, fonts y libs (React, three, ogl, Swiper, Babel, dc-runtime, Waves)
 vercel.json         # cleanUrls + cache + funciones
 .env.example        # variables de entorno necesarias
 ```
+
+Backend **todo en Vercel**: Vercel Postgres (datos) + Vercel Blob (imágenes) +
+auth propia por cookie firmada (sin proveedores externos).
 
 El home funciona aunque el backend no esté configurado (degrada al contenido base).
 
@@ -32,27 +36,27 @@ python3 -m http.server 4599
 
 ---
 
-## Puesta en marcha del CMS
+## Puesta en marcha del CMS (todo en Vercel)
 
-### 1. Crear proyecto en Supabase
-1. En [supabase.com](https://supabase.com) → **New project**.
-2. **SQL Editor** → pegá y ejecutá `supabase/schema.sql` (crea tablas, RLS y el bucket `media`).
-3. **Authentication → Providers → Email**: activá email/password y **DESACTIVÁ** "Allow new users to sign up" (que solo exista tu cuenta).
-4. **Authentication → Users → Add user**: creá tu usuario admin (ej. `hanna@authomata.io`) con contraseña.
-5. **Project Settings → API**: copiá `Project URL`, `anon public` key y `service_role` key.
+### 1. Storage en Vercel (auto-inyecta sus env vars)
+En el proyecto de Vercel → **Storage**:
+1. **Create → Postgres** → conectalo al proyecto. Luego abrí su pestaña **Query** y ejecutá `db/schema.sql` (crea las tablas).
+2. **Create → Blob** → conectalo al proyecto (para las imágenes).
 
-### 2. Variables de entorno en Vercel
-En el proyecto de Vercel → **Settings → Environment Variables** (ver `.env.example`):
+Ambos setean solos `POSTGRES_URL` y `BLOB_READ_WRITE_TOKEN`.
+
+### 2. Variables de entorno del admin (a mano)
+En **Settings → Environment Variables** (ver `.env.example`):
 
 | Variable | Valor |
 |---|---|
-| `SUPABASE_URL` | Project URL |
-| `SUPABASE_ANON_KEY` | anon public key |
-| `SUPABASE_SERVICE_ROLE_KEY` | service_role key **(secreto)** |
-| `ADMIN_EMAILS` | tu email admin, en minúscula |
+| `AUTH_SECRET` | cadena aleatoria: `openssl rand -base64 32` |
+| `ADMIN_EMAIL` | tu email admin, en minúscula |
+| `ADMIN_PASSWORD_HASH` | generalo con `npm run hash-password -- 'tu-contraseña'` |
 | `IG_ACCOUNTS_JSON` | `{}` por ahora (ver Instagram) |
 
-Redeploy. Entrá a `/admin`, iniciá sesión y editá el contenido / revisá la bandeja.
+Redeploy. Entrá a `/admin`, iniciá sesión con tu email + contraseña y editá el
+contenido / revisá la bandeja.
 
 ### 3. Instagram en vivo (opcional)
 Solo funciona sobre cuentas que **administrás** (Instagram Graph API):

@@ -17,7 +17,7 @@
   .btn { background:var(--lime); color:#000; font-weight:700; padding:10px 16px; }
   .btn.ghost { background:transparent; color:#fff; border:1px solid var(--line); }
   .btn:disabled { opacity:.5; cursor:default; }
-  .wrap { max-width:900px; margin:0 auto; padding:20px 18px 80px; }
+  .wrap { max-width:900px; margin:0 auto; padding:20px 18px 90px; }
   .tabs { display:flex; gap:8px; margin:18px 0; }
   .tabs button { background:var(--panel); color:#fff; border:1px solid var(--line); padding:8px 14px; }
   .tabs button.active { background:var(--lime); color:#000; border-color:var(--lime); font-weight:700; }
@@ -55,7 +55,6 @@
   <div id="whoami" class="note"></div>
 </header>
 
-<!-- Login -->
 <div id="login" class="center hidden">
   <h2>Entrar</h2>
   <p id="login-note" class="note"></p>
@@ -65,7 +64,6 @@
   <p id="login-err" class="err"></p>
 </div>
 
-<!-- App -->
 <div id="app" class="wrap hidden">
   <div class="tabs">
     <button id="tab-content" class="active">Contenido</button>
@@ -83,68 +81,61 @@
   </div>
 </div>
 
-<script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
-
+<script>
 const $ = (s) => document.querySelector(s);
-let sb = null, spec = null, values = {}, session = null;
+let spec = null, values = {}, me = null;
+
+async function api(path, opts) {
+  const r = await fetch(path, Object.assign({ credentials: 'same-origin' }, opts));
+  let j = null; try { j = await r.json(); } catch {}
+  return { ok: r.ok, status: r.status, j: j || {} };
+}
 
 async function boot() {
-  let cfg;
-  try {
-    const r = await fetch('/api/config');
-    cfg = await r.json();
-  } catch (e) {
-    cfg = { configured: false };
-  }
-  if (!cfg.configured) {
+  const s = await api('/api/session');
+  if (!s.j.configured) {
     $('#login').classList.remove('hidden');
-    $('#login-note').innerHTML = '<span class="err">Backend sin configurar.</span> Definí SUPABASE_URL y SUPABASE_ANON_KEY en Vercel.';
+    $('#login-note').innerHTML = '<span class="err">Backend sin configurar.</span> Definí AUTH_SECRET, ADMIN_EMAIL y ADMIN_PASSWORD_HASH en Vercel.';
     $('#login-btn').disabled = true;
     return;
   }
-  sb = createClient(cfg.url, cfg.anonKey);
-  const { data } = await sb.auth.getSession();
-  session = data.session;
-  if (session) enterApp(); else showLogin();
+  if (s.j.authed) { me = s.j.email; enterApp(); } else showLogin();
 }
 
 function showLogin() {
-  $('#app').classList.add('hidden');
-  $('#savebar').classList.add('hidden');
+  $('#app').classList.add('hidden'); $('#savebar').classList.add('hidden');
   $('#login').classList.remove('hidden');
 }
 
 $('#login-btn').addEventListener('click', async () => {
   $('#login-err').textContent = '';
-  const email = $('#email').value.trim();
-  const password = $('#password').value;
-  const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) { $('#login-err').textContent = error.message; return; }
-  session = data.session;
-  enterApp();
+  const res = await api('/api/login', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: $('#email').value.trim(), password: $('#password').value }),
+  });
+  if (!res.ok) { $('#login-err').textContent = res.j.error || 'Error'; return; }
+  me = res.j.email; enterApp();
 });
 
 async function enterApp() {
   $('#login').classList.add('hidden');
   $('#app').classList.remove('hidden');
   $('#savebar').classList.remove('hidden');
-  $('#whoami').textContent = session.user.email;
-  [spec, values] = await Promise.all([
+  $('#whoami').textContent = me;
+  const [specRes, contentRes] = await Promise.all([
     fetch('/content.spec.json').then(r => r.json()),
-    fetch('/api/content').then(r => r.json()).then(j => (j && j.data) || {}),
+    api('/api/content'),
   ]);
+  spec = specRes;
+  values = (contentRes.j && contentRes.j.data) || {};
   renderContent();
   loadInbox();
 }
 
-// ── Contenido ──────────────────────────────────────────────
 function renderContent() {
-  const root = $('#view-content');
-  root.innerHTML = '';
+  const root = $('#view-content'); root.innerHTML = '';
   spec.groups.forEach((g) => {
-    const det = document.createElement('details');
-    det.className = 'group';
+    const det = document.createElement('details'); det.className = 'group';
     const sum = document.createElement('summary');
     sum.innerHTML = `<span>${g.label}</span><span class="note">${g.fields.length} campos</span>`;
     det.appendChild(sum);
@@ -154,8 +145,7 @@ function renderContent() {
 }
 
 function fieldEl(f) {
-  const d = document.createElement('div');
-  d.className = 'field';
+  const d = document.createElement('div'); d.className = 'field';
   const cur = values[f.key];
   const placeholder = f.find || f.default || '';
   if (f.type === 'image') {
@@ -163,7 +153,7 @@ function fieldEl(f) {
       <div class="imgrow">
         <img class="thumb" data-thumb="${f.key}" src="${cur || ''}" alt="">
         <div class="col">
-          <input type="text" data-key="${f.key}" value="${escapeAttr(cur || '')}" placeholder="URL de imagen o subí un archivo →">
+          <input type="text" data-key="${f.key}" value="${escapeAttr(cur || '')}" placeholder="URL o subí un archivo →">
           <div style="margin-top:8px"><input type="file" accept="image/*" data-upload="${f.key}"></div>
         </div>
       </div>`;
@@ -177,7 +167,6 @@ function fieldEl(f) {
   return d;
 }
 
-// captura de inputs → values
 $('#view-content').addEventListener('input', (e) => {
   const key = e.target.getAttribute('data-key');
   if (key != null) {
@@ -189,23 +178,20 @@ $('#view-content').addEventListener('input', (e) => {
   }
 });
 
-// upload de imágenes a Storage
 $('#view-content').addEventListener('change', async (e) => {
   const key = e.target.getAttribute('data-upload');
   if (!key || !e.target.files || !e.target.files[0]) return;
   const file = e.target.files[0];
   setStatus('Subiendo imagen…');
-  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-  const path = `${key.replace(/[^a-z0-9._-]/gi, '_')}-${Date.now()}.${ext}`;
-  const { error } = await sb.storage.from('media').upload(path, file, { upsert: true, cacheControl: '31536000' });
-  if (error) { setStatus('Error al subir: ' + error.message, true); return; }
-  const { data } = sb.storage.from('media').getPublicUrl(path);
-  const url = data.publicUrl;
-  values[key] = url;
+  const res = await api('/api/upload?name=' + encodeURIComponent(file.name), {
+    method: 'POST', headers: { 'Content-Type': file.type || 'image/jpeg' }, body: file,
+  });
+  if (!res.ok) { setStatus('Error al subir: ' + (res.j.error || res.status), true); return; }
+  values[key] = res.j.url;
   const input = document.querySelector(`input[data-key="${key}"]`);
-  if (input) input.value = url;
+  if (input) input.value = res.j.url;
   const th = document.querySelector(`[data-thumb="${key}"]`);
-  if (th) th.src = url;
+  if (th) th.src = res.j.url;
   setStatus('Imagen subida ✓');
 });
 
@@ -213,26 +199,22 @@ $('#save').addEventListener('click', async () => {
   setStatus('Guardando…');
   const clean = {};
   Object.keys(values).forEach((k) => { if (values[k] !== '' && values[k] != null) clean[k] = values[k]; });
-  const res = await fetch('/api/content', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+  const res = await api('/api/content', {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ data: clean }),
   });
-  const j = await res.json().catch(() => ({}));
-  if (res.ok && j.ok) setStatus('Guardado ✓ — se refleja en el sitio al recargar.');
-  else setStatus('Error: ' + (j.error || res.status), true);
+  if (res.ok && res.j.ok) setStatus('Guardado ✓ — se refleja en el sitio al recargar.');
+  else setStatus('Error: ' + (res.j.error || res.status), true);
 });
 
-// ── Bandeja ────────────────────────────────────────────────
 async function loadInbox() {
-  const res = await fetch('/api/messages', { headers: authHeader() });
-  const j = await res.json().catch(() => ({}));
+  const res = await api('/api/messages');
   const view = $('#view-inbox');
-  if (!res.ok) { view.innerHTML = `<p class="err">${j.error || 'Error'}</p>`; return; }
-  $('#unread-badge').textContent = j.unread ? `(${j.unread})` : '';
-  if (!j.messages.length) { view.innerHTML = '<p class="note">Sin mensajes todavía.</p>'; return; }
+  if (!res.ok) { view.innerHTML = `<p class="err">${res.j.error || 'Error'}</p>`; return; }
+  $('#unread-badge').textContent = res.j.unread ? `(${res.j.unread})` : '';
+  if (!res.j.messages.length) { view.innerHTML = '<p class="note">Sin mensajes todavía.</p>'; return; }
   view.innerHTML = '';
-  j.messages.forEach((m) => view.appendChild(msgEl(m)));
+  res.j.messages.forEach((m) => view.appendChild(msgEl(m)));
 }
 
 function msgEl(m) {
@@ -244,9 +226,9 @@ function msgEl(m) {
     ${m.subject ? `<div class="note">Asunto: ${escapeHtml(m.subject)}</div>` : ''}
     <div class="body">${escapeHtml(m.message)}</div>
     <div class="acts">
-      <button data-act="read" data-id="${m.id}">${m.read ? 'Marcar no leído' : 'Marcar leído'}</button>
-      <button data-act="archive" data-id="${m.id}">Archivar</button>
-      <button data-act="delete" data-id="${m.id}">Borrar</button>
+      <button data-act="read">${m.read ? 'Marcar no leído' : 'Marcar leído'}</button>
+      <button data-act="archive">Archivar</button>
+      <button data-act="delete">Borrar</button>
     </div>`;
   d.querySelector('[data-act=read]').onclick = () => patchMsg(m.id, { read: !m.read });
   d.querySelector('[data-act=archive]').onclick = () => patchMsg(m.id, { archived: true });
@@ -255,15 +237,14 @@ function msgEl(m) {
 }
 
 async function patchMsg(id, patch) {
-  await fetch('/api/messages', { method: 'PATCH', headers: { ...authHeader(), 'Content-Type': 'application/json' }, body: JSON.stringify({ id, ...patch }) });
+  await api('/api/messages', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ id }, patch)) });
   loadInbox();
 }
 async function delMsg(id) {
-  await fetch('/api/messages', { method: 'DELETE', headers: { ...authHeader(), 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+  await api('/api/messages', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
   loadInbox();
 }
 
-// ── tabs / util ────────────────────────────────────────────
 $('#tab-content').onclick = () => switchTab('content');
 $('#tab-inbox').onclick = () => { switchTab('inbox'); loadInbox(); };
 function switchTab(t) {
@@ -273,9 +254,8 @@ function switchTab(t) {
   $('#view-inbox').classList.toggle('hidden', t !== 'inbox');
   $('#save').classList.toggle('hidden', t !== 'content');
 }
-$('#logout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
+$('#logout').onclick = async () => { await api('/api/logout', { method: 'POST' }); location.reload(); };
 
-function authHeader() { return { 'Authorization': 'Bearer ' + session.access_token }; }
 function setStatus(t, err) { const s = $('#save-status'); s.textContent = t; s.className = 'status' + (err ? ' err' : ''); }
 function escapeHtml(s) { return String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
 function escapeAttr(s) { return String(s).replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
