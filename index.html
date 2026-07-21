@@ -8728,6 +8728,51 @@ body{
  </div>
  </div>
 
+ <!-- CMS: contact form -->
+<div id="contact-form" data-reveal="" style="max-width:1056px;margin:0 auto 44px;">
+ <div style="position:relative;">
+ <span style="position:absolute;top:-10px;left:14px;z-index:2;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;background:#000000;color:#CBFD51;padding:2px 8px;text-transform:uppercase;">[ escríbeme · 08 ]</span>
+ <div style="border:2px dashed #CBFD51;padding:26px 20px 22px;">
+ <h3 style="font-family:'Anton',sans-serif;font-weight:400;font-size:34px;line-height:.95;letter-spacing:.01em;color:#fff;margin:0 0 4px;text-transform:uppercase;">ESCRÍBEME</h3>
+ <p style="font-family:'Space Mono',monospace;font-size:11px;color:#888;margin:0 0 20px;letter-spacing:.04em;">Booking · colaboraciones · prensa — respondo directo.</p>
+ <form id="nb-contact" novalidate style="display:flex;flex-direction:column;gap:14px;">
+ <div style="position:absolute;left:-9999px;" aria-hidden="true">
+ <label>No llenar<input type="text" name="company" tabindex="-1" autocomplete="off"></label>
+ </div>
+ <div style="display:grid;grid-template-columns:1fr;gap:14px;">
+ <input name="name" required placeholder="Tu nombre *" autocomplete="name" style="background:#0c0c0c;border:1px solid #333;color:#fff;font-family:'Space Mono',monospace;font-size:13px;padding:13px 14px;outline:none;width:100%;">
+ <input name="email" type="email" required placeholder="Tu email *" autocomplete="email" style="background:#0c0c0c;border:1px solid #333;color:#fff;font-family:'Space Mono',monospace;font-size:13px;padding:13px 14px;outline:none;width:100%;">
+ <input name="subject" placeholder="Asunto (opcional)" style="background:#0c0c0c;border:1px solid #333;color:#fff;font-family:'Space Mono',monospace;font-size:13px;padding:13px 14px;outline:none;width:100%;">
+ <textarea name="message" required rows="5" placeholder="Tu mensaje *" style="background:#0c0c0c;border:1px solid #333;color:#fff;font-family:'Space Mono',monospace;font-size:13px;padding:13px 14px;outline:none;width:100%;resize:vertical;"></textarea>
+ </div>
+ <button type="submit" style="background:#CBFD51;border:none;color:#000;font-family:'Anton',sans-serif;font-size:18px;letter-spacing:.03em;text-transform:uppercase;padding:15px 20px;cursor:pointer;width:100%;">ENVIAR ✦</button>
+ <p id="nb-contact-status" role="status" aria-live="polite" style="font-family:'Space Mono',monospace;font-size:12px;margin:0;min-height:16px;color:#CBFD51;"></p>
+ </form>
+ </div>
+ </div>
+</div>
+<script>
+(function(){
+ var f=document.getElementById('nb-contact');if(!f)return;
+ var s=document.getElementById('nb-contact-status');
+ f.addEventListener('submit',function(e){
+  e.preventDefault();
+  var b=f.querySelector('button[type=submit]');
+  var fd=new FormData(f),p={};fd.forEach(function(v,k){p[k]=v;});
+  s.style.color='#888';s.textContent='Enviando…';b.disabled=true;
+  fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})
+   .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j};});})
+   .then(function(res){
+    if(res.ok&&res.j.ok){s.style.color='#CBFD51';s.textContent='¡Gracias! Te respondo pronto.';f.reset();}
+    else{s.style.color='#ff6b6b';s.textContent=(res.j&&res.j.error)||'No se pudo enviar.';}
+   })
+   .catch(function(){s.style.color='#ff6b6b';s.textContent='Error de red. Intenta de nuevo.';})
+   .finally(function(){b.disabled=false;});
+ });
+})();
+</script>
+<!-- /CMS: contact form -->
+
  <!-- social media (unified) -->
  <div style="max-width:1056px;margin:0 auto 44px;">
  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:22px;">
@@ -9428,4 +9473,5 @@ class Component extends DCLogic {
 </script>
 
 
+<script src="/hydrate.js" defer></script>
 </body></html>

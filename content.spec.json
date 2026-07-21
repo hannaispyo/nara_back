@@ -1,0 +1,188 @@
+{
+  "version": 1,
+  "note": "Fuente única del CMS. 'find' = texto original del nodo (para localizarlo). 'img' = id del image-slot. Editá 'default' desde el /admin; el home se hidrata con estos valores.",
+  "groups": [
+    {
+      "id": "nav",
+      "label": "Navegación + marca",
+      "fields": [
+        { "key": "nav.marquee1", "type": "text", "scope": "#wall", "find": "STREET · RAVE · SELF-EXPRESSION · INDIVIDUALITY · QUEER · UNDERGROUND · CREATIVITY", "label": "Marquee superior 1" },
+        { "key": "nav.marquee2", "type": "text", "scope": "#wall", "find": "DJ · FASHION · UPCYCLING · CULTURE · MUSIC · FREEDOM · SAY IT LOUD", "label": "Marquee superior 2" },
+        { "key": "nav.djsets", "type": "text", "scope": "#wall", "find": "My DJ Sets", "label": "Nav · DJ Sets" },
+        { "key": "nav.eventos", "type": "text", "scope": "#wall", "find": "Eventos", "label": "Nav · Eventos" },
+        { "key": "nav.booking", "type": "text", "scope": "#wall", "find": "Booking", "label": "Nav · Booking", "occurrence": 0 },
+        { "key": "nav.mediakit", "type": "text", "scope": "#wall", "find": "Media Kit", "label": "Nav · Media Kit", "occurrence": 0 },
+        { "key": "nav.soundcloud", "type": "text", "scope": "#wall", "find": "SoundCloud", "label": "Nav · SoundCloud", "occurrence": 0 }
+      ]
+    },
+    {
+      "id": "hero",
+      "label": "Hero",
+      "fields": [
+        { "key": "hero.ctaAgendar", "type": "text", "scope": "#wall", "find": "Agendar evento ✦", "label": "Botón agendar" },
+        { "key": "hero.ctaMediaKit", "type": "text", "scope": "#wall", "find": "Media Kit ↓", "label": "Botón media kit" },
+        { "key": "hero.badge", "type": "text", "scope": "#wall", "find": "DON'T WORRY · NARA BACK · CRUDO Y REAL ·", "label": "Texto del sello circular" }
+      ]
+    },
+    {
+      "id": "soundcloud",
+      "label": "SoundCloud / Set",
+      "fields": [
+        { "key": "sc.reproducir", "type": "text", "scope": "#wall", "find": "▶ REPRODUCIR AQUÍ", "label": "Etiqueta reproducir", "occurrence": 0 },
+        { "key": "sc.escucha", "type": "text", "scope": "#wall", "find": "Escucha mi set en SoundCloud", "label": "Sub-etiqueta", "occurrence": 0 },
+        { "key": "sc.nowPlaying", "type": "text", "scope": "#wall", "find": "NOW PLAYING · MINIMAL FRENZY VOL.1", "label": "Now playing" },
+        { "key": "sc.artist", "type": "text", "scope": "#wall", "find": "Nara Back", "label": "Artista", "occurrence": 0 },
+        { "key": "sc.setTitle", "type": "text", "scope": "#wall", "find": "Minimal frenzy - Vol.1", "label": "Título del set" }
+      ]
+    },
+    {
+      "id": "live",
+      "label": "Live sets",
+      "fields": [
+        { "key": "live.title", "type": "text", "scope": "#wall", "find": "LIVE SETS · 2026 ·", "label": "Título" },
+        { "key": "live.route", "type": "text", "scope": "#wall", "find": "SANTIAGO → BERLIN", "label": "Ruta / ciudades" },
+        { "key": "live.genres", "type": "text", "scope": "#wall", "find": "DJ · DEEP HOUSE · ELECTRONIC", "label": "Géneros" }
+      ]
+    },
+    {
+      "id": "festivales",
+      "label": "Festivales & escenarios",
+      "fields": [
+        { "key": "fest.title", "type": "text", "scope": "#wall", "find": "FESTIVALES & ESCENARIOS · 2026", "label": "Título" },
+        { "key": "fest.genres", "type": "text", "scope": "#wall", "find": "minimal - deep house - tech house - acid - breakbeat - garage", "label": "Lista de géneros" },
+        { "key": "fest.tagline", "type": "text", "scope": "#wall", "find": "FESTIVALES · RAVES · LANZAMIENTO · FIESTAS", "label": "Tagline" },
+        { "key": "fest.v1", "type": "text", "scope": "#wall", "find": "MAINSTAGE", "label": "Escenario 1" },
+        { "key": "fest.v2", "type": "text", "scope": "#wall", "find": "WAREHOUSE", "label": "Escenario 2" },
+        { "key": "fest.v3", "type": "text", "scope": "#wall", "find": "TERMINAL", "label": "Escenario 3" },
+        { "key": "fest.v4", "type": "text", "scope": "#wall", "find": "ACID ARENA", "label": "Escenario 4" },
+        { "key": "fest.v5", "type": "text", "scope": "#wall", "find": "ROOFTOP", "label": "Escenario 5" },
+        { "key": "fest.v6", "type": "text", "scope": "#wall", "find": "BOILER ROOM", "label": "Escenario 6" }
+      ]
+    },
+    {
+      "id": "editorial",
+      "label": "Editorial / Lookbook",
+      "fields": [
+        { "key": "ed.title", "type": "text", "scope": "#wall", "find": "SS26 LOOKBOOK", "label": "Título" },
+        { "key": "ed.number", "type": "text", "scope": "#wall", "find": "N°03", "label": "Número" },
+        { "key": "ed.look1", "type": "text", "scope": "#wall", "find": "LOOK 01 — PASARELA", "label": "Look 1" },
+        { "key": "ed.beauty", "type": "text", "scope": "#wall", "find": "BEAUTY · CCD", "label": "Beauty" },
+        { "key": "ed.look2", "type": "text", "scope": "#wall", "find": "LOOK 02", "label": "Look 2" }
+      ]
+    },
+    {
+      "id": "cultural",
+      "label": "Relevancia cultural",
+      "fields": [
+        { "key": "cul.l1", "type": "text", "scope": "#wall", "find": "Nara Back conecta", "label": "Línea 1" },
+        { "key": "cul.l2", "type": "text", "scope": "#wall", "find": "música, moda e identidad", "label": "Línea 2 (destacada)" },
+        { "key": "cul.l3", "type": "text", "scope": "#wall", "find": "— donde lo diferente se vuelve expresión.", "label": "Línea 3" }
+      ]
+    },
+    {
+      "id": "workfolio",
+      "label": "Índice / Workfolio",
+      "fields": [
+        { "key": "wf.subtitle", "type": "text", "scope": "#wall", "find": "Explora cada sección del universo NARA BACK. Toca para abrir.", "label": "Subtítulo" }
+      ]
+    },
+    {
+      "id": "agenda",
+      "label": "Instagram · @narabacks",
+      "fields": [
+        { "key": "ig.nb.handle", "type": "text", "scope": "#agenda", "find": "@narabacks", "label": "Handle", "occurrence": 0 },
+        { "key": "ig.nb.posts", "type": "text", "scope": "#agenda", "find": "142", "label": "Posts" },
+        { "key": "ig.nb.followers", "type": "text", "scope": "#agenda", "find": "8.4K", "label": "Seguidores" },
+        { "key": "ig.nb.following", "type": "text", "scope": "#agenda", "find": "612", "label": "Seguidos" },
+        { "key": "ig.nb.bio", "type": "text", "scope": "#agenda", "find": "DJ · sets, shows y cultura ◎ CDMX", "label": "Bio" },
+        { "key": "ig.nb.avatar", "type": "image", "img": "agenda-avatar", "label": "Avatar" },
+        { "key": "ig.nb.p1", "type": "image", "img": "agenda-1", "label": "Post 1" },
+        { "key": "ig.nb.p2", "type": "image", "img": "agenda-2", "label": "Post 2" },
+        { "key": "ig.nb.p3", "type": "image", "img": "agenda-3", "label": "Post 3" },
+        { "key": "ig.nb.p4", "type": "image", "img": "agenda-4", "label": "Post 4" },
+        { "key": "ig.nb.p5", "type": "image", "img": "agenda-5", "label": "Post 5" },
+        { "key": "ig.nb.p6", "type": "image", "img": "agenda-6", "label": "Post 6" }
+      ]
+    },
+    {
+      "id": "musica",
+      "label": "Música · proyectos IG",
+      "fields": [
+        { "key": "ig.yf.handle", "type": "text", "scope": "#proyectos", "find": "yellowfevermusic", "label": "@yellowfever · handle", "occurrence": 0 },
+        { "key": "ig.yf.avatar", "type": "image", "img": "ig-av-yf", "label": "@yellowfever · avatar" },
+        { "key": "ig.yf.f1", "type": "image", "img": "ig-yf-1", "label": "@yellowfever · feed 1" },
+        { "key": "ig.yf.f2", "type": "image", "img": "ig-yf-2", "label": "@yellowfever · feed 2" },
+        { "key": "ig.yf.f3", "type": "image", "img": "ig-yf-3", "label": "@yellowfever · feed 3" },
+        { "key": "ig.lj.handle", "type": "text", "scope": "#proyectos", "find": "eslulujam", "label": "@lulujam · handle", "occurrence": 0 },
+        { "key": "ig.lj.avatar", "type": "image", "img": "ig-av-lj", "label": "@lulujam · avatar" },
+        { "key": "ig.lj.f1", "type": "image", "img": "ig-lj-1", "label": "@lulujam · feed 1" },
+        { "key": "ig.lj.f2", "type": "image", "img": "ig-lj-2", "label": "@lulujam · feed 2" },
+        { "key": "ig.lj.f3", "type": "image", "img": "ig-lj-3", "label": "@lulujam · feed 3" }
+      ]
+    },
+    {
+      "id": "fashion",
+      "label": "Fashion / Upcycling",
+      "fields": [
+        { "key": "fa.copy", "type": "text", "scope": "#wall", "find": "Moda circular y diseño local hecho a mano. La estética NARA también se viste de segunda vida.", "label": "Copy fashion" },
+        { "key": "ig.wt.handle", "type": "text", "scope": "#wall", "find": "wantedupcycling", "label": "@wanted · handle", "occurrence": 0 },
+        { "key": "ig.wt.avatar", "type": "image", "img": "ig-av-wt", "label": "@wanted · avatar" },
+        { "key": "ig.wt.f1", "type": "image", "img": "ig-wt-1", "label": "@wanted · feed 1" },
+        { "key": "ig.wt.f2", "type": "image", "img": "ig-wt-2", "label": "@wanted · feed 2" },
+        { "key": "ig.wt.f3", "type": "image", "img": "ig-wt-3", "label": "@wanted · feed 3" },
+        { "key": "ig.up.handle", "type": "text", "scope": "#wall", "find": "upcycled.work", "label": "@upcycled · handle", "occurrence": 0 },
+        { "key": "ig.up.avatar", "type": "image", "img": "ig-av-up", "label": "@upcycled · avatar" },
+        { "key": "ig.up.f1", "type": "image", "img": "ig-up-1", "label": "@upcycled · feed 1" },
+        { "key": "ig.up.f2", "type": "image", "img": "ig-up-2", "label": "@upcycled · feed 2" },
+        { "key": "ig.up.f3", "type": "image", "img": "ig-up-3", "label": "@upcycled · feed 3" }
+      ]
+    },
+    {
+      "id": "mediakit",
+      "label": "Media Kit / Audiencia",
+      "fields": [
+        { "key": "mk.trabaja1", "type": "text", "scope": "#wall", "find": "TRABAJA", "label": "Título 1" },
+        { "key": "mk.trabaja2", "type": "text", "scope": "#wall", "find": "CON NARA.", "label": "Título 2" },
+        { "key": "mk.sub", "type": "text", "scope": "#wall", "find": "CAMPAÑAS · PUBLICIDAD · EVENTOS", "label": "Subtítulo" },
+        { "key": "mk.aud.title", "type": "text", "scope": "#wall", "find": "21–45", "label": "Audiencia · edad" },
+        { "key": "mk.life.title", "type": "text", "scope": "#wall", "find": "Club & Cultura", "label": "Estilo de vida · título" },
+        { "key": "mk.email", "type": "text", "scope": "#wall", "find": "naraback.p@gmail.com", "label": "Email (media kit)", "occurrence": 0 }
+      ]
+    },
+    {
+      "id": "booking",
+      "label": "Booking / Social",
+      "fields": [
+        { "key": "bk.title", "type": "text", "scope": "#contact", "find": "BOOKING", "label": "Título booking" },
+        { "key": "bk.sub", "type": "text", "scope": "#contact", "find": "[ creative talent · cultural figure · fashion & music personality ]", "label": "Subtítulo" },
+        { "key": "bk.igHandle", "type": "text", "scope": "#contact", "find": "DM → @narabacks", "label": "Instagram DM" },
+        { "key": "bk.tkHandle", "type": "text", "scope": "#contact", "find": "Seguir → @naraback", "label": "TikTok" },
+        { "key": "social.sc", "type": "image", "img": "social-sc", "label": "Foto · SoundCloud" },
+        { "key": "social.ig", "type": "image", "img": "social-ig", "label": "Foto · Instagram" },
+        { "key": "social.tk", "type": "image", "img": "social-tk", "label": "Foto · TikTok" },
+        { "key": "social.bk", "type": "image", "img": "social-bk", "label": "Foto · Booking" }
+      ]
+    },
+    {
+      "id": "footer",
+      "label": "Footer / Contacto",
+      "fields": [
+        { "key": "ft.email", "type": "text", "scope": "#wall", "find": "naraback.p@gmail.com", "label": "Email footer", "occurrence": 1 },
+        { "key": "ft.ig", "type": "text", "scope": "#wall", "find": "IG · @narabacks", "label": "IG footer" },
+        { "key": "ft.base", "type": "text", "scope": "#wall", "find": "Madrid · ES", "label": "Base / ciudad" },
+        { "key": "ft.copy", "type": "text", "scope": "#wall", "find": "© 2026 NARA BACK", "label": "Copyright" },
+        { "key": "ft.sayitloud", "type": "text", "scope": "#wall", "find": "SAY IT LOUD ★", "label": "Say it loud" }
+      ]
+    },
+    {
+      "id": "links",
+      "label": "Enlaces (URLs)",
+      "fields": [
+        { "key": "url.soundcloud", "type": "url", "label": "URL SoundCloud (set)", "default": "https://soundcloud.com/naraback/minimalvol1" },
+        { "key": "url.instagram", "type": "url", "label": "URL Instagram @narabacks", "default": "https://instagram.com/narabacks" },
+        { "key": "url.tiktok", "type": "url", "label": "URL TikTok", "default": "https://tiktok.com/@naraback" },
+        { "key": "url.mediakit", "type": "url", "label": "URL Media Kit (PDF)", "default": "" }
+      ]
+    }
+  ]
+}
