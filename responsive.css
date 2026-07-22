@@ -1,0 +1,52 @@
+/* NARA BACK — capa de correcciones responsive para móvil.
+   El home es un artefacto compilado con estilos inline, así que estas reglas
+   usan !important para poder sobreescribirlos. Solo corrigen contenido que
+   quedaba CORTADO E INALCANZABLE en pantallas chicas; no alteran el diseño
+   en desktop (todo va dentro de media queries).
+
+   Piezas decorativas (collages absolutos dentro de contenedores con
+   overflow:hidden, el fondo #magnet-dj, el sello giratorio y el carrusel de
+   eventos) se dejan intactas: su desborde es intencional. */
+
+@media (max-width: 640px) {
+
+  /* ── 1. Tarjetas de proyectos de Instagram (MÚSICA y FASHION) ──────────
+     Eran ítems de un flex column que no se estiraban y, con min-width:auto,
+     no podían encoger: se dimensionaban a max-content (~1040px) dentro de un
+     padre de ~318px → se recortaba el 70% (botón "Seguir", link @handle y
+     2 de las 3 imágenes del feed quedaban fuera de pantalla). */
+  .scp1, .scp2, .scp3 {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    align-self: stretch !important;
+  }
+  .scp1 *, .scp2 *, .scp3 * { min-width: 0 !important; }
+
+  /* El feed interno pedía columnas de mínimo 150px: en móvil no entraban 3. */
+  .scp1 [style*="minmax(150px"],
+  .scp2 [style*="minmax(150px"],
+  .scp3 [style*="minmax(150px"] {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  /* ── 2. Bloques inline-block que se dimensionan a max-content ────────── */
+  #wall [style*="inline-block"] { max-width: 100% !important; }
+
+  /* ── 3. Titular del lookbook con font-size: 100px fijo ("STREET-STYLE") ─ */
+  #wall h2[style*="100px"] { font-size: clamp(44px, 19vw, 100px) !important; }
+
+  /* ── 4. Titular del media kit: line-height 0.92 hacía que el resaltado
+     rosa de "CON NARA." colisionara con "CAMPAÑAS · PUBLICIDAD". ───────── */
+  #wall h2[style*="clamp(34px"] { line-height: 1.08 !important; }
+
+  /* ── 5. Titular "BOOKING" con width fijo (~550px) hardcodeado ────────── */
+  #wall h2[style*="clamp(48px"] {
+    width: auto !important;
+    max-width: 100% !important;
+  }
+
+  /* ── 6. Grilla de redes: repeat(4,1fr) con ítems que no encogían ─────── */
+  #wall [style*="repeat(4, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
+  #wall [style*="repeat(4, 1fr)"] > * { min-width: 0 !important; }
+}
