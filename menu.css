@@ -1,0 +1,226 @@
+/* NARA BACK — barra sticky + menú a pantalla completa.
+   Se inyecta en <body>, fuera de #wall, para no chocar con el runtime de
+   componentes del home. Extiende el lenguaje visual del sitio: negro, lima
+   ácido, magenta, Anton + Space Mono, brackets y numeración de secciones. */
+
+:root {
+  --nb-lime: #CBFD51;
+  --nb-magenta: #EC5CCE;
+  --nb-bar-h: 54px;
+}
+
+/* ─── Nav del hero: 2×2 en vez del quiebre 3+1 ───────────────────────── */
+@media (max-width: 640px) {
+  .nb-heronav {
+    display: grid !important;
+    grid-template-columns: repeat(2, auto) !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 12px 26px !important;
+  }
+}
+
+/* Compensa la barra sticky al saltar a una sección */
+[id] { scroll-margin-top: 74px; }
+
+/* ─── Barra sticky ───────────────────────────────────────────────────── */
+.nb-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nb-bar-h);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  background: rgba(0, 0, 0, .92);
+  backdrop-filter: saturate(140%) blur(8px);
+  -webkit-backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: 2px solid var(--nb-lime);
+  transform: translateY(-100%);
+  transition: transform .28s cubic-bezier(.22, .9, .3, 1);
+}
+.nb-bar.is-visible { transform: translateY(0); }
+
+.nb-bar__mark {
+  font-family: 'Anton', 'Roboto Mono', sans-serif;
+  font-size: 17px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  line-height: 1;
+  white-space: nowrap;
+}
+.nb-bar__mark span { color: var(--nb-lime); }
+
+/* Botón hamburguesa con etiqueta monoespaciada (lenguaje de brackets del sitio) */
+.nb-burger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: 0;
+  padding: 10px 4px 10px 10px;   /* área táctil ≥44px sin agrandar lo visible */
+  cursor: pointer;
+  color: var(--nb-lime);
+  font-family: 'Space Mono', ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.nb-burger__lines {
+  position: relative;
+  width: 26px; height: 14px;
+  flex: none;
+}
+.nb-burger__lines i {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--nb-lime);
+  transition: transform .26s cubic-bezier(.22,.9,.3,1), opacity .18s linear;
+}
+.nb-burger__lines i:nth-child(1) { top: 0; }
+.nb-burger__lines i:nth-child(2) { top: 6px; }
+.nb-burger__lines i:nth-child(3) { top: 12px; }
+
+/* ─── Panel a pantalla completa ──────────────────────────────────────── */
+.nb-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  /* `visibility` es discreta: se difiere al final al cerrar y se aplica al
+     instante al abrir. Transicionarla directamente deja el panel atrapado
+     en `hidden` si las transiciones no corren. */
+  transition: opacity .26s ease, visibility 0s linear .26s;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.nb-panel.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .26s ease, visibility 0s linear 0s;
+}
+
+/* Textura sutil: líneas diagonales muy tenues, coherente con el collage */
+.nb-panel::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    -45deg, rgba(203,253,81,.045) 0 1px, transparent 1px 9px);
+  pointer-events: none;
+}
+
+.nb-panel__top {
+  position: sticky; top: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  height: var(--nb-bar-h);
+  border-bottom: 2px dashed rgba(203,253,81,.5);
+  background: #000;
+  z-index: 2;
+}
+.nb-panel__kicker {
+  font-family: 'Space Mono', ui-monospace, monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: .14em;
+  color: var(--nb-lime); text-transform: uppercase;
+}
+.nb-close {
+  background: transparent; border: 0; cursor: pointer;
+  color: #fff;
+  font-family: 'Space Mono', ui-monospace, monospace;
+  font-size: 11px; font-weight: 700; letter-spacing: .12em;
+  padding: 12px 4px 12px 12px;
+  text-transform: uppercase;
+}
+.nb-close:hover, .nb-close:focus-visible { color: var(--nb-magenta); }
+
+.nb-panel__nav {
+  flex: 1;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  padding: 26px 16px 8px;
+  position: relative; z-index: 1;
+}
+
+.nb-link {
+  display: flex; align-items: baseline; gap: 14px;
+  text-decoration: none;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  /* Visible por defecto: el contenido NUNCA depende de que la animación
+     corra. La entrada escalonada es solo un realce cuando el panel abre. */
+}
+.nb-panel.is-open .nb-link {
+  animation: nbIn .42s cubic-bezier(.22,.9,.3,1) both;
+}
+@keyframes nbIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+.nb-link__n {
+  font-family: 'Space Mono', ui-monospace, monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  color: var(--nb-lime); flex: none; width: 22px;
+}
+.nb-link__t {
+  font-family: 'Anton', 'Roboto Mono', sans-serif;
+  font-size: clamp(30px, 10.5vw, 54px);
+  line-height: .98;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  color: #fff;
+  transition: color .18s linear, transform .22s cubic-bezier(.22,.9,.3,1);
+}
+.nb-link:hover .nb-link__t,
+.nb-link:focus-visible .nb-link__t { color: var(--nb-lime); transform: translateX(8px); }
+.nb-link:active .nb-link__t { color: var(--nb-magenta); }
+
+.nb-panel__foot {
+  padding: 16px 16px 22px;
+  display: flex; flex-wrap: wrap; gap: 10px 18px;
+  font-family: 'Space Mono', ui-monospace, monospace;
+  font-size: 11px; letter-spacing: .06em;
+  position: relative; z-index: 1;
+}
+.nb-panel__foot a { color: var(--nb-lime); text-decoration: none; padding: 6px 0; }
+.nb-panel__foot a:hover { color: var(--nb-magenta); }
+
+/* Marquee inferior — mismo recurso que usa el home */
+.nb-marquee {
+  border-top: 2px solid var(--nb-lime);
+  overflow: hidden; white-space: nowrap;
+  background: var(--nb-lime);
+  position: relative; z-index: 1;
+}
+.nb-marquee span {
+  display: inline-block;
+  padding: 7px 0;
+  font-family: 'Space Mono', ui-monospace, monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: .18em;
+  color: #000; text-transform: uppercase;
+  animation: nbMarquee 18s linear infinite;
+}
+@keyframes nbMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* Foco visible y accesible sobre fondo negro */
+.nb-panel a:focus-visible, .nb-bar button:focus-visible, .nb-panel button:focus-visible {
+  outline: 2px solid var(--nb-lime);
+  outline-offset: 3px;
+}
+
+/* En pantallas grandes la barra sticky no hace falta: el hero ya navega */
+@media (min-width: 900px) { .nb-bar { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .nb-bar, .nb-panel, .nb-link__t { transition: none; }
+  .nb-panel.is-open .nb-link { animation: none; opacity: 1; transform: none; }
+  .nb-marquee span { animation: none; }
+}
