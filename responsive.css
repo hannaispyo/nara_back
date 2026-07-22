@@ -49,4 +49,29 @@
   /* ── 6. Grilla de redes: repeat(4,1fr) con ítems que no encogían ─────── */
   #wall [style*="repeat(4, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
   #wall [style*="repeat(4, 1fr)"] > * { min-width: 0 !important; }
+
+  /* ── 7. Áreas táctiles bajo el mínimo WCAG 2.5.8 AA (24×24 px) ────────
+     Solo se corrigen las que realmente fallaban; el resto de la navegación
+     ya cumple (24–26px de alto). Ningún cambio visual. */
+
+  /* Créditos del set: eran <a> inline de 15px de alto. El padding vertical
+     en un inline agranda el área de toque SIN alterar el interlineado. */
+  #wall a[href*="soundcloud.com"] {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  /* Bullets de paginación del carrusel ("Go to slide N"): 9×9 px reales.
+     El ::after transparente lleva el área de toque a 25×25 sin agrandar
+     el punto visible; el margen extra evita que se solapen entre sí. */
+  #wall .swiper-pagination-bullet {
+    position: relative;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+  }
+  #wall .swiper-pagination-bullet::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+  }
 }
