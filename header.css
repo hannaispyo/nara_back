@@ -1,0 +1,143 @@
+/* NARA BACK — rediseño del tope en móvil: wordmark + tira de navegación + botonera.
+   Concepto: credencial de backstage / estarcido de flight-case. Industrial,
+   estampado, jerarquía tajante. Solo móvil: en desktop el hero original manda. */
+
+@media (max-width: 640px) {
+
+  /* ── Bloque contenedor: columna centrada y compacta ─────────────────── */
+  #wall .nbh-bar {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    padding: 14px 18px 2px !important;
+  }
+  #wall .nbh-mark    { order: 1; }
+  #wall .nb-heronav  { order: 2; }
+  #wall .nbh-actions { order: 3; }
+
+  /* ── Wordmark: presencia real, no un pie de página ──────────────────── */
+  #wall .nbh-mark {
+    font-family: 'Anton', 'Roboto Mono', sans-serif !important;
+    font-size: clamp(34px, 11vw, 48px) !important;
+    line-height: .82 !important;
+    letter-spacing: .012em !important;
+    text-align: center !important;
+    text-transform: uppercase;
+    color: #fff !important;
+    width: 100% !important;
+    padding-bottom: 9px !important;
+    border-bottom: 2px solid var(--nb-lime, #CBFD51);
+    position: relative;
+  }
+  /* Sello de credencial pegado al filo inferior */
+  #wall .nbh-mark::after {
+    content: 'DJ · SS26';
+    position: absolute; right: 0; bottom: -9px;
+    background: var(--nb-lime, #CBFD51); color: #000;
+    font-family: 'Space Mono', ui-monospace, monospace;
+    font-size: 9px; font-weight: 700; letter-spacing: .16em;
+    padding: 2px 7px;
+  }
+
+  /* ── Tira de navegación: una sola línea, acotada por filetes ────────── */
+  #wall .nb-heronav {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    grid-template-columns: none !important;   /* anula el 2×2 anterior */
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0 !important;
+    width: 100% !important;
+    padding: 7px 0 !important;
+    border-top: 1px solid rgba(203, 253, 81, .34);
+    border-bottom: 1px solid rgba(203, 253, 81, .34);
+  }
+  #wall .nb-heronav > a {
+    font-family: 'Space Mono', ui-monospace, monospace !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: .14em !important;
+    text-transform: uppercase;
+    color: #fff !important;
+    text-decoration: none !important;
+    padding: 7px 10px !important;              /* área táctil ≥24px (WCAG 2.5.8) */
+    line-height: 1.1 !important;
+    border-right: 1px solid rgba(203, 253, 81, .28);
+    transition: color .16s linear, background-color .16s linear;
+  }
+  #wall .nb-heronav > a:last-child { border-right: 0; }
+  #wall .nb-heronav > a:hover,
+  #wall .nb-heronav > a:focus-visible { color: var(--nb-lime, #CBFD51) !important; }
+  #wall .nb-heronav > a:active { background: var(--nb-lime, #CBFD51); color: #000 !important; }
+
+  /* SoundCloud, reubicado dentro de la tira, marcado como salida externa */
+  #wall .nbh-sc { color: var(--nb-lime, #CBFD51) !important; }
+  #wall .nbh-sc::after { content: ' ↗'; }
+
+  /* ── Botonera: dos bloques estampados con sombra dura ───────────────── */
+  #wall .nbh-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+    padding: 2px 4px 8px !important;
+  }
+  #wall .nbh-cta {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    min-height: 50px !important;
+    padding: 12px 16px !important;
+    font-family: 'Anton', 'Roboto Mono', sans-serif !important;
+    font-size: 19px !important;
+    font-weight: 400 !important;
+    letter-spacing: .035em !important;
+    text-transform: uppercase;
+    text-decoration: none !important;
+    border-radius: 0 !important;
+    transition: transform .12s cubic-bezier(.22,.9,.3,1), box-shadow .12s cubic-bezier(.22,.9,.3,1);
+  }
+  /* Primario: la acción que paga. Magenta con desplazamiento lima. */
+  #wall .nbh-cta--primary {
+    background: #EC5CCE !important;
+    color: #fff !important;
+    border: 2px solid #000 !important;
+    box-shadow: 5px 5px 0 var(--nb-lime, #CBFD51) !important;
+  }
+  /* Secundario: fantasma lima, marco completo (antes estaba roto) */
+  #wall .nbh-cta--ghost {
+    background: transparent !important;
+    color: var(--nb-lime, #CBFD51) !important;
+    border: 2px solid var(--nb-lime, #CBFD51) !important;
+    box-shadow: 5px 5px 0 rgba(203, 253, 81, .22) !important;
+  }
+  /* En pantallas muy angostas el sello del hero se monta sobre el CTA:
+     se reserva aire a la derecha para que el texto no quede pisado.
+     (El sello no intercepta el toque; la superposición es solo visual.) */
+  @media (max-width: 360px) {
+    #wall .nbh-cta--primary { padding-right: 66px !important; }
+  }
+
+  /* Micro-interacción: el bloque se hunde sobre su propia sombra */
+  #wall .nbh-cta:active {
+    transform: translate(4px, 4px) !important;
+    box-shadow: 1px 1px 0 rgba(203, 253, 81, .5) !important;
+  }
+
+  /* ── Entrada escalonada. El contenido es visible por defecto: la
+     animación solo realza, nunca condiciona que se vea. ──────────────── */
+  #wall .nbh-mark, #wall .nb-heronav, #wall .nbh-actions { animation: nbhIn .5s cubic-bezier(.22,.9,.3,1) both; }
+  #wall .nbh-mark    { animation-delay: .05s; }
+  #wall .nb-heronav  { animation-delay: .14s; }
+  #wall .nbh-actions { animation-delay: .22s; }
+  @keyframes nbhIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    #wall .nbh-mark, #wall .nb-heronav, #wall .nbh-actions { animation: none; }
+    #wall .nbh-cta { transition: none; }
+  }
+}

@@ -11,13 +11,7 @@
 
 /* ─── Nav del hero: 2×2 en vez del quiebre 3+1 ───────────────────────── */
 @media (max-width: 640px) {
-  .nb-heronav {
-    display: grid !important;
-    grid-template-columns: repeat(2, auto) !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 12px 26px !important;
-  }
+  /* La tira de navegación del hero la define ahora header.css. */
 }
 
 /* Compensa la barra sticky al saltar a una sección */
