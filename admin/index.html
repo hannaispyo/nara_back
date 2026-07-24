@@ -47,6 +47,20 @@
   .hidden { display:none !important; }
   .err { color:#ff6b6b; }
   .note { color:var(--muted); font-size:12px; }
+  /* ── Editor de secciones ── */
+  .sec { border:1px solid var(--line); border-radius:12px; margin-bottom:12px; background:var(--panel); overflow:hidden; }
+  .sec.off { opacity:.55; }
+  .sec__bar { display:flex; align-items:center; gap:10px; padding:11px 14px; }
+  .sec__type { font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:#000; background:var(--lime); padding:2px 7px; border-radius:4px; font-weight:700; flex:none; }
+  .sec__name { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:700; }
+  .sec__bar button { background:#1e1e1e; color:#fff; border:1px solid var(--line); padding:6px 9px; font-size:12px; }
+  .sec__body { padding:0 14px 14px; border-top:1px solid #1c1c1c; }
+  .sec__body .field { padding:10px 0; border:0; }
+  .sec__imgs { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .sec__img { border:1px solid var(--line); border-radius:8px; padding:8px; }
+  .sec__img img { width:100%; height:74px; object-fit:cover; border-radius:6px; background:#000; display:block; margin-bottom:6px; }
+  .addbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:4px 0 16px; }
+  .addbar select { background:#0c0c0c; border:1px solid var(--line); color:#fff; border-radius:8px; padding:9px 11px; font:inherit; }
 </style>
 </head>
 <body>
@@ -67,9 +81,11 @@
 <div id="app" class="wrap hidden">
   <div class="tabs">
     <button id="tab-content" class="active">Contenido</button>
+    <button id="tab-sections">Secciones</button>
     <button id="tab-inbox">Bandeja <span id="unread-badge"></span></button>
   </div>
   <div id="view-content"></div>
+  <div id="view-sections" class="hidden"></div>
   <div id="view-inbox" class="hidden"></div>
 </div>
 
@@ -245,14 +261,124 @@ async function delMsg(id) {
   loadInbox();
 }
 
+// ── Secciones del home ─────────────────────────────────────
+const SEC_TYPES = { texto:'Texto', imagen:'Imagen + texto', galeria:'Galería', cta:'Llamado a la acción' };
+
+function secs() { if (!Array.isArray(values.sections)) values.sections = []; return values.sections; }
+
+function renderSections() {
+  const root = $('#view-sections');
+  const list = secs();
+  root.innerHTML = '';
+
+  const bar = document.createElement('div');
+  bar.className = 'addbar';
+  bar.innerHTML = `<select id="sec-type">${Object.keys(SEC_TYPES).map(k=>`<option value="${k}">${SEC_TYPES[k]}</option>`).join('')}</select>
+    <button class="btn" id="sec-add">+ Añadir sección</button>
+    <span class="note">Se muestran en el home, antes de la sección de booking.</span>`;
+  root.appendChild(bar);
+  bar.querySelector('#sec-add').onclick = () => {
+    list.push({ id:'s'+Date.now(), type: bar.querySelector('#sec-type').value, visible:true,
+      kicker:'', title:'', body:'', image:'', images:[], ctaLabel:'', ctaUrl:'', flip:false });
+    renderSections();
+  };
+
+  if (!list.length) { root.insertAdjacentHTML('beforeend','<p class="note">Todavía no hay secciones propias. Añadí una arriba.</p>'); return; }
+
+  list.forEach((s, i) => root.appendChild(secCard(s, i, list.length)));
+}
+
+function secCard(s, i, total) {
+  const d = document.createElement('div');
+  d.className = 'sec' + (s.visible === false ? ' off' : '');
+  const barHtml = `<div class="sec__bar">
+      <span class="sec__type">${SEC_TYPES[s.type] || s.type}</span>
+      <span class="sec__name">${escapeHtml(s.title || '(sin título)')}</span>
+      <button data-a="up" ${i===0?'disabled':''}>↑</button>
+      <button data-a="down" ${i===total-1?'disabled':''}>↓</button>
+      <button data-a="vis">${s.visible === false ? 'Mostrar' : 'Ocultar'}</button>
+      <button data-a="del">Borrar</button>
+    </div>`;
+
+  let f = `<div class="field"><label>Etiqueta (kicker)</label><input type="text" data-s="${i}:kicker" value="${escapeAttr(s.kicker||'')}" placeholder="[ nueva sección ]"></div>
+    <div class="field"><label>Título</label><input type="text" data-s="${i}:title" value="${escapeAttr(s.title||'')}"></div>
+    <div class="field"><label>Texto</label><textarea data-s="${i}:body">${escapeHtml(s.body||'')}</textarea></div>`;
+
+  if (s.type === 'imagen') {
+    f += `<div class="field"><label>Imagen</label>
+        <div class="imgrow"><img class="thumb" data-sthumb="${i}:image" src="${escapeAttr(s.image||'')}" alt="">
+          <div class="col"><input type="text" data-s="${i}:image" value="${escapeAttr(s.image||'')}" placeholder="URL o subí un archivo →">
+            <div style="margin-top:8px"><input type="file" accept="image/*" data-supload="${i}:image"></div></div></div></div>
+      <div class="field"><label><input type="checkbox" data-scheck="${i}:flip" ${s.flip?'checked':''}> Imagen a la derecha (en pantallas anchas)</label></div>`;
+  } else if (s.type === 'galeria') {
+    const imgs = s.images || [];
+    f += `<div class="field"><label>Imágenes (${imgs.length})</label><div class="sec__imgs">` +
+      imgs.map((u,j)=>`<div class="sec__img"><img src="${escapeAttr(u)}" alt="">
+          <input type="text" data-s="${i}:images:${j}" value="${escapeAttr(u)}" placeholder="URL">
+          <div style="margin-top:6px;display:flex;gap:6px">
+            <input type="file" accept="image/*" data-supload="${i}:images:${j}" style="flex:1;min-width:0">
+            <button data-a="delimg" data-j="${j}" style="background:#1e1e1e;color:#fff;border:1px solid var(--line);padding:4px 8px;font-size:12px">✕</button>
+          </div></div>`).join('') +
+      `</div><button data-a="addimg" class="btn ghost" style="margin-top:10px">+ Imagen</button></div>`;
+  } else if (s.type === 'cta') {
+    f += `<div class="field"><label>Texto del botón</label><input type="text" data-s="${i}:ctaLabel" value="${escapeAttr(s.ctaLabel||'')}" placeholder="Escríbeme"></div>
+      <div class="field"><label>Enlace del botón</label><input type="url" data-s="${i}:ctaUrl" value="${escapeAttr(s.ctaUrl||'')}" placeholder="https://…  o  #contact-form"></div>`;
+  }
+
+  d.innerHTML = barHtml + `<div class="sec__body">${f}</div>`;
+
+  const list = secs();
+  d.querySelector('[data-a=up]').onclick = () => { if(i>0){ [list[i-1],list[i]]=[list[i],list[i-1]]; renderSections(); } };
+  d.querySelector('[data-a=down]').onclick = () => { if(i<list.length-1){ [list[i+1],list[i]]=[list[i],list[i+1]]; renderSections(); } };
+  d.querySelector('[data-a=vis]').onclick = () => { list[i].visible = list[i].visible === false; renderSections(); };
+  d.querySelector('[data-a=del]').onclick = () => { if(confirm('¿Borrar esta sección?')){ list.splice(i,1); renderSections(); } };
+  const addImg = d.querySelector('[data-a=addimg]');
+  if (addImg) addImg.onclick = () => { (list[i].images = list[i].images || []).push(''); renderSections(); };
+  d.querySelectorAll('[data-a=delimg]').forEach(b => b.onclick = () => { list[i].images.splice(+b.dataset.j,1); renderSections(); });
+  return d;
+}
+
+function setSecValue(path, val) {
+  const p = path.split(':'), i = +p[0], list = secs();
+  if (!list[i]) return;
+  if (p[1] === 'images') { (list[i].images = list[i].images || [])[+p[2]] = val; }
+  else list[i][p[1]] = val;
+}
+
+$('#view-sections').addEventListener('input', (e) => {
+  const path = e.target.getAttribute('data-s');
+  if (path == null) return;
+  setSecValue(path, e.target.value);
+  const th = document.querySelector(`[data-sthumb="${path}"]`);
+  if (th) th.src = e.target.value;
+});
+$('#view-sections').addEventListener('change', async (e) => {
+  const chk = e.target.getAttribute('data-scheck');
+  if (chk) { const p = chk.split(':'); secs()[+p[0]][p[1]] = e.target.checked; return; }
+  const path = e.target.getAttribute('data-supload');
+  if (!path || !e.target.files || !e.target.files[0]) return;
+  const file = e.target.files[0];
+  setStatus('Subiendo imagen…');
+  const res = await api('/api/upload?name=' + encodeURIComponent(file.name), {
+    method: 'POST', headers: { 'Content-Type': file.type || 'image/jpeg' }, body: file });
+  if (!res.ok) { setStatus('Error al subir: ' + (res.j.error || res.status), true); return; }
+  setSecValue(path, res.j.url);
+  setStatus('Imagen subida ✓');
+  renderSections();
+});
+
+// ── tabs / util ────────────────────────────────────────────
 $('#tab-content').onclick = () => switchTab('content');
+$('#tab-sections').onclick = () => { switchTab('sections'); renderSections(); };
 $('#tab-inbox').onclick = () => { switchTab('inbox'); loadInbox(); };
 function switchTab(t) {
   $('#tab-content').classList.toggle('active', t === 'content');
+  $('#tab-sections').classList.toggle('active', t === 'sections');
   $('#tab-inbox').classList.toggle('active', t === 'inbox');
   $('#view-content').classList.toggle('hidden', t !== 'content');
+  $('#view-sections').classList.toggle('hidden', t !== 'sections');
   $('#view-inbox').classList.toggle('hidden', t !== 'inbox');
-  $('#save').classList.toggle('hidden', t !== 'content');
+  $('#save').classList.toggle('hidden', t === 'inbox');
 }
 $('#logout').onclick = async () => { await api('/api/logout', { method: 'POST' }); location.reload(); };
 
