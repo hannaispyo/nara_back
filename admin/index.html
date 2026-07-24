@@ -56,6 +56,7 @@
   .sec__bar button { background:#1e1e1e; color:#fff; border:1px solid var(--line); padding:6px 9px; font-size:12px; }
   .sec__body { padding:0 14px 14px; border-top:1px solid #1c1c1c; }
   .sec__body .field { padding:10px 0; border:0; }
+  .sec__body select { width:100%; background:#0c0c0c; border:1px solid var(--line); color:#fff; border-radius:8px; padding:10px 12px; font:inherit; }
   .sec__imgs { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
   .sec__img { border:1px solid var(--line); border-radius:8px; padding:8px; }
   .sec__img img { width:100%; height:74px; object-fit:cover; border-radius:6px; background:#000; display:block; margin-bottom:6px; }
@@ -263,6 +264,15 @@ async function delMsg(id) {
 
 // ── Secciones del home ─────────────────────────────────────
 const SEC_TYPES = { texto:'Texto', imagen:'Imagen + texto', galeria:'Galería', cta:'Llamado a la acción' };
+// Debe coincidir con ANCHORS de sections.js. Solo bloques de nivel superior:
+// las secciones internas (Música, Eventos…) están dentro de un acordeón que
+// arranca cerrado, así que insertar ahí escondería el contenido.
+const SEC_ANCHORS = {
+  'colecciones':  'Antes del índice (Workfolio)',
+  'contact':      'Antes de Booking',
+  'contact-form': 'Antes del formulario “Escríbeme”',
+  '__end':        'Al final de todo'
+};
 
 function secs() { if (!Array.isArray(values.sections)) values.sections = []; return values.sections; }
 
@@ -279,7 +289,7 @@ function renderSections() {
   root.appendChild(bar);
   bar.querySelector('#sec-add').onclick = () => {
     list.push({ id:'s'+Date.now(), type: bar.querySelector('#sec-type').value, visible:true,
-      kicker:'', title:'', body:'', image:'', images:[], ctaLabel:'', ctaUrl:'', flip:false });
+      anchor:'contact', kicker:'', title:'', body:'', image:'', images:[], ctaLabel:'', ctaUrl:'', flip:false });
     renderSections();
   };
 
@@ -300,7 +310,10 @@ function secCard(s, i, total) {
       <button data-a="del">Borrar</button>
     </div>`;
 
-  let f = `<div class="field"><label>Etiqueta (kicker)</label><input type="text" data-s="${i}:kicker" value="${escapeAttr(s.kicker||'')}" placeholder="[ nueva sección ]"></div>
+  const anc = SEC_ANCHORS[s.anchor] ? s.anchor : 'contact';
+  let f = `<div class="field"><label>Posición en el home</label>
+      <select data-s="${i}:anchor">${Object.keys(SEC_ANCHORS).map(k=>`<option value="${k}"${k===anc?' selected':''}>${SEC_ANCHORS[k]}</option>`).join('')}</select></div>
+    <div class="field"><label>Etiqueta (kicker)</label><input type="text" data-s="${i}:kicker" value="${escapeAttr(s.kicker||'')}" placeholder="[ nueva sección ]"></div>
     <div class="field"><label>Título</label><input type="text" data-s="${i}:title" value="${escapeAttr(s.title||'')}"></div>
     <div class="field"><label>Texto</label><textarea data-s="${i}:body">${escapeHtml(s.body||'')}</textarea></div>`;
 
@@ -355,6 +368,10 @@ $('#view-sections').addEventListener('input', (e) => {
 $('#view-sections').addEventListener('change', async (e) => {
   const chk = e.target.getAttribute('data-scheck');
   if (chk) { const p = chk.split(':'); secs()[+p[0]][p[1]] = e.target.checked; return; }
+  // Los <select> (posición) no siempre disparan 'input' en todos los navegadores.
+  if (e.target.tagName === 'SELECT' && e.target.getAttribute('data-s')) {
+    setSecValue(e.target.getAttribute('data-s'), e.target.value); return;
+  }
   const path = e.target.getAttribute('data-supload');
   if (!path || !e.target.files || !e.target.files[0]) return;
   const file = e.target.files[0];

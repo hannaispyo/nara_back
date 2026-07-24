@@ -8,6 +8,18 @@
   var CONTAINER_ID = 'nb-sections';
   var mounting = false;
 
+  // Posiciones ofrecidas. Solo bloques de NIVEL SUPERIOR: las secciones
+  // internas (Música, Campañas, Eventos, Instagram) viven dentro del acordeón
+  // #colecciones y arrancan colapsadas, así que insertar ahí escondería el
+  // contenido. Debe coincidir con SEC_ANCHORS del /admin.
+  var ANCHORS = ['colecciones', 'contact', 'contact-form', '__end'];
+  var DEFAULT_ANCHOR = 'contact';
+
+  function anchorOf(sec) {
+    var a = sec && sec.anchor;
+    return ANCHORS.indexOf(a) >= 0 ? a : DEFAULT_ANCHOR;
+  }
+
   // Lista blanca de destinos: externos http(s), rutas propias, anclas de la
   // misma página y contacto. Todo lo demás se descarta (javascript:, data:…).
   function safeUrl(u) {
@@ -90,27 +102,62 @@
     return wrap;
   }
 
-  function render(sections) {
+  function hostId(anchor) { return CONTAINER_ID + '-' + anchor.replace(/[^a-z0-9_-]/gi, ''); }
+
+  function mountPoints() {
+    // Devuelve el punto de inserción por posición, o null si no existe aún.
     var wall = document.getElementById('wall');
-    var anchor = document.getElementById('contact');
-    if (!wall || !anchor) return false;
+    if (!wall) return null;
+    var pts = {};
+    ANCHORS.forEach(function (a) {
+      if (a === '__end') { pts[a] = { parent: wall, before: null }; return; }
+      var t = document.getElementById(a);
+      if (t && t.parentNode) pts[a] = { parent: t.parentNode, before: t };
+    });
+    return pts;
+  }
 
-    var old = document.getElementById(CONTAINER_ID);
-    if (old) old.remove();
+  function render(sections) {
+    var pts = mountPoints();
+    if (!pts || !pts[DEFAULT_ANCHOR]) return false;   // esperamos al home
 
-    var list = (sections || []).filter(function (s) {
+    ANCHORS.forEach(function (a) {
+      var old = document.getElementById(hostId(a));
+      if (old) old.remove();
+    });
+
+    var visible = (sections || []).filter(function (s) {
       return s && s.visible !== false && (s.title || s.body || s.image || (s.images || []).length);
     });
-    if (!list.length) return true;
+    if (!visible.length) return true;
 
-    var host = el('div', 'nbs-wrap');
-    host.id = CONTAINER_ID;
-    list.forEach(function (s) { host.appendChild(build(s)); });
+    // Agrupa por posición conservando el orden del admin dentro de cada grupo.
+    var groups = {};
+    visible.forEach(function (s) {
+      var a = anchorOf(s);
+      if (!pts[a]) a = DEFAULT_ANCHOR;               // posición no disponible
+      (groups[a] = groups[a] || []).push(s);
+    });
 
-    mounting = true;                       // evita reaccionar a mi propia inserción
-    anchor.parentNode.insertBefore(host, anchor);
+    mounting = true;                                  // ignora mis propias mutaciones
+    Object.keys(groups).forEach(function (a) {
+      var host = el('div', 'nbs-wrap');
+      host.id = hostId(a);
+      groups[a].forEach(function (s) { host.appendChild(build(s)); });
+      var p = pts[a];
+      if (p.before) p.parent.insertBefore(host, p.before);
+      else p.parent.appendChild(host);
+    });
     setTimeout(function () { mounting = false; }, 60);
     return true;
+  }
+
+  function allMounted(sections) {
+    var need = {};
+    (sections || []).forEach(function (s) {
+      if (s && s.visible !== false) need[anchorOf(s)] = true;
+    });
+    return Object.keys(need).every(function (a) { return !!document.getElementById(hostId(a)); });
   }
 
   function load() {
@@ -132,7 +179,7 @@
             var t = null;
             new MutationObserver(function () {
               if (mounting) return;
-              if (document.getElementById(CONTAINER_ID)) return;
+              if (allMounted(sections)) return;
               clearTimeout(t);
               t = setTimeout(function () { render(sections); }, 250);
             }).observe(wall, { childList: true, subtree: true });
