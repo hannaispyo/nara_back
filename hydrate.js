@@ -54,11 +54,30 @@
     return false;
   }
 
+  // <image-slot> escala la imagen para cubrir una dimensión y deja DESBORDAR
+  // la otra sin recortarla: cualquier imagen no cuadrada se sale del mosaico y
+  // pisa el layout (en desktop llegaba a taparse con la tarjeta vecina).
+  // Se recorta en el host (equivale a un "cover"), salvo los QR: recortarlos
+  // los dejaría inescaneables, así que esos se muestran completos.
   function applyImage(field) {
     var value = VALUES[field.key];
     if (!value) return;
     var el = document.getElementById(field.img);
-    if (el && el.getAttribute('src') !== value) el.setAttribute('src', value);
+    if (!el) return;
+    if (el.getAttribute('src') !== value) el.setAttribute('src', value);
+    var keepWhole = /qr[-_]/i.test(value);   // códigos QR: nunca recortar
+    if (keepWhole) {
+      if (el.getAttribute('fit') !== 'contain') el.setAttribute('fit', 'contain');
+    }
+  }
+
+  // El recorte va en el host, que sí es estilable desde fuera del shadow DOM.
+  function injectSlotClip() {
+    if (document.getElementById('nb-slot-clip')) return;
+    var s = document.createElement('style');
+    s.id = 'nb-slot-clip';
+    s.textContent = 'image-slot{overflow:hidden;}';
+    (document.head || document.documentElement).appendChild(s);
   }
 
   function eachField(cb) {
@@ -129,6 +148,7 @@
 
   function boot() {
     var tries = 0;
+    injectSlotClip();
     (function poll() {
       if (ready()) {
         applyAll();
