@@ -8,12 +8,15 @@
   var CONTAINER_ID = 'nb-sections';
   var mounting = false;
 
+  // Lista blanca de destinos: externos http(s), rutas propias, anclas de la
+  // misma página y contacto. Todo lo demás se descarta (javascript:, data:…).
   function safeUrl(u) {
     if (!u) return '';
     var s = String(u).trim();
-    // Solo http(s) o rutas relativas del propio sitio.
     if (/^https?:\/\//i.test(s)) return s;
-    if (/^\//.test(s) && !/^\/\//.test(s)) return s;
+    if (/^#[\w-]+$/.test(s)) return s;                      // ancla interna
+    if (/^\//.test(s) && !/^\/\//.test(s)) return s;         // ruta propia
+    if (/^(mailto|tel):[^\s<>"']+$/i.test(s)) return s;      // email / teléfono
     return '';
   }
 
