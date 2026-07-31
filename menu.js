@@ -14,43 +14,14 @@
     { n: '06', label: 'Escríbeme', target: '#contact-form' }
   ];
 
-  // Cada link del hero apuntaba a un destino repetido (4 links → 2 anclas).
-  var HERO_HREFS = {
-    'My DJ Sets': '#proyectos',
-    'Eventos':    '#eventos',
-    'Booking':    '#contact',
-    'Media Kit':  '#mediakit'
-  };
-
   var EMAIL = 'naraback.p@gmail.com';
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var bar, panel, burger, closeBtn, lastFocus = null, open = false;
 
-  // ── Parches sobre el home (idempotentes) ────────────────────────────
-  function patchHero() {
-    var links = document.querySelectorAll('#wall a');
-    var navParent = null;
-    for (var i = 0; i < links.length; i++) {
-      var t = (links[i].textContent || '').trim();
-      if (HERO_HREFS[t]) {
-        if (links[i].getAttribute('href') !== HERO_HREFS[t]) {
-          links[i].setAttribute('href', HERO_HREFS[t]);
-        }
-        if (t === 'My DJ Sets') navParent = links[i].parentElement;
-      }
-    }
-    if (navParent && !navParent.classList.contains('nb-heronav')) {
-      navParent.classList.add('nb-heronav');
-    }
-    // El bloque de media kit no tenía id al que anclar.
-    if (!document.getElementById('mediakit')) {
-      var hs = document.querySelectorAll('#wall h2');
-      for (var j = 0; j < hs.length; j++) {
-        if (/TRABAJA/i.test(hs[j].textContent || '')) { hs[j].id = 'mediakit'; break; }
-      }
-    }
-  }
+  // Los hrefs del hero, el ancla #mediakit y las clases del rediseño móvil
+  // viven en el HTML fuente (marcadores estables). El menú ya no parchea el
+  // hero por texto: así el CMS puede renombrar los rótulos sin romper nada.
 
   // ── Construcción de la UI ───────────────────────────────────────────
   function build() {
@@ -184,19 +155,8 @@
   // ── Init ────────────────────────────────────────────────────────────
   function init() {
     build();
-    patchHero();
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
-
-    // El runtime del home re-renderiza: reaplicar los parches del hero.
-    var wall = document.getElementById('wall');
-    if (wall && typeof MutationObserver !== 'undefined') {
-      var t = null;
-      new MutationObserver(function () {
-        clearTimeout(t);
-        t = setTimeout(patchHero, 250);
-      }).observe(wall, { childList: true, subtree: true });
-    }
   }
 
   function waitForWall(tries) {

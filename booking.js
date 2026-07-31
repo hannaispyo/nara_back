@@ -129,30 +129,29 @@
   function setStatus(t, err) { statusEl.textContent = t; statusEl.className = 'nbk-status' + (err ? ' err' : ''); }
 
   // ── Cableado de CTAs y botones Media Kit (idempotente) ──────────────
-  var AGENDAR = /agendar|agenda tu evento/i;
-
+  // Los disparadores se localizan por CLASES marcadoras del HTML fuente
+  // (.nb-agendar, .nb-mediakit-*), no por texto: así el CMS puede renombrar
+  // los rótulos sin romper el cableado. Se usan clases y no data-* porque el
+  // runtime del home descarta los atributos data-* desconocidos al re-render,
+  // pero conserva las clases. Ese re-render recrea los nodos, por eso wire()
+  // se reaplica (el guard dataset evita listeners duplicados).
   function wire() {
-    var links = document.querySelectorAll('#wall a');
-    for (var i = 0; i < links.length; i++) {
-      var a = links[i];
-      var txt = (a.textContent || '').trim();
+    // Disparadores de "agendar" → abren el modal.
+    document.querySelectorAll('#wall .nb-agendar').forEach(function (a) {
+      if (a.dataset.nbkWired) return;
+      a.dataset.nbkWired = '1';
+      a.addEventListener('click', function (e) { e.preventDefault(); openModal(); });
+    });
 
-      // CTAs de agendar (eran mailto) → abren el modal
-      if (AGENDAR.test(txt) && !a.dataset.nbkWired) {
-        a.dataset.nbkWired = '1';
-        a.addEventListener('click', function (e) { e.preventDefault(); openModal(); });
-      }
+    // "Media Kit ↓" del hero → scroll suave a la sección (con aterrizaje).
+    document.querySelectorAll('#wall .nb-mediakit-scroll').forEach(function (a) {
+      if (a.dataset.nbkMk) return;
+      a.dataset.nbkMk = 'scroll';
+      a.addEventListener('click', function (e) { e.preventDefault(); goTo('mediakit'); });
+    });
 
-      // "DESCARGAR Media Kit" → URL del CMS o se oculta
-      if (/descargar/i.test(txt) && /media kit/i.test(txt)) {
-        applyMediakit(a);
-      } else if (txt === 'Media Kit ↓' && !a.dataset.nbkMk) {
-        // Hero: la flecha ↓ indica bajar → scroll a la sección media kit
-        a.dataset.nbkMk = 'scroll';
-        a.setAttribute('href', '#mediakit');
-        a.addEventListener('click', function (e) { e.preventDefault(); goTo('mediakit'); });
-      }
-    }
+    // "DESCARGAR Media Kit" → URL del CMS o se oculta.
+    document.querySelectorAll('#wall .nb-mediakit-dl').forEach(applyMediakit);
   }
 
   function applyMediakit(a) {
@@ -170,10 +169,7 @@
   }
 
   function refreshMediakit() {
-    document.querySelectorAll('#wall a').forEach(function (a) {
-      var txt = (a.textContent || '').trim();
-      if (/descargar/i.test(txt) && /media kit/i.test(txt)) applyMediakit(a);
-    });
+    document.querySelectorAll('#wall .nb-mediakit-dl').forEach(applyMediakit);
   }
 
   // Scroll con garantía de aterrizaje (mismo criterio que el menú).
