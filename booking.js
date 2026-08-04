@@ -24,7 +24,7 @@
           '<button type="button" class="nbk-x" data-close>Cerrar ✕</button>' +
         '</div>' +
         '<form class="nbk-form" novalidate>' +
-          '<div class="nbk-hp"><label>No llenar<input type="text" name="company" tabindex="-1" autocomplete="off"></label></div>' +
+          '<div class="nbk-hp" aria-hidden="true"><label>No llenar<input type="text" name="nb_hp" tabindex="-1" autocomplete="off"></label></div>' +
           '<div class="nbk-row">' +
             '<div class="nbk-field"><label>Nombre *</label><input name="name" required autocomplete="name"></div>' +
             '<div class="nbk-field"><label>Email *</label><input name="email" type="email" required autocomplete="email"></div>' +
@@ -109,7 +109,7 @@
     fetch('/api/contact', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: name, email: email, company: d.company || '',
+        name: name, email: email, nb_hp: d.nb_hp || '',
         subject: 'Agendar evento — ' + (d.eventType || ''),
         message: message
       })

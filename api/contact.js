@@ -9,7 +9,10 @@ export default async function handler(req, res) {
   if (!isConfigured()) return json(res, 503, { error: 'Formulario no disponible (backend sin configurar)' });
 
   const b = await readJson(req);
-  if (b.company || b.website || b._gotcha) return json(res, 200, { ok: true }); // honeypot
+  // Honeypot: solo campos con nombre NO autocompletable por el navegador.
+  // (No usar 'company'/'website': el autofill de contacto los rellena y
+  // descartaría envíos legítimos —p. ej. desde el modal de Agendar evento.)
+  if (b.nb_hp || b._gotcha) return json(res, 200, { ok: true });
 
   const name = clip(b.name, 120);
   const email = clip(b.email, 200);
