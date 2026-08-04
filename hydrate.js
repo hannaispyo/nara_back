@@ -80,6 +80,30 @@
     (document.head || document.documentElement).appendChild(s);
   }
 
+  // ── enlaces de redes editables desde el CMS ─────────────
+  // Se localizan por su href actual (destino estable), NO por texto: hydrate
+  // reescribe textos pero nunca hrefs, así que el href identifica al link sin
+  // acoplarse a los rótulos. `url.mediakit` lo maneja booking.js (botón de
+  // descarga con lógica de ocultar). Los links de PERFIL de SoundCloud quedan
+  // fijos: el CMS solo expone `url.soundcloud` como el SET.
+  var URL_TARGETS = {
+    'url.instagram':  'instagram.com/narabacks',
+    'url.tiktok':     'tiktok.com/@naraback',
+    'url.soundcloud': 'soundcloud.com/naraback/minimalvol1'
+  };
+
+  function applyUrl(field) {
+    var value = VALUES[field.key];
+    if (!value) return;                        // sin override → deja el href original
+    var needle = URL_TARGETS[field.key];
+    if (!needle) return;
+    var links = document.querySelectorAll('a[href]');
+    for (var i = 0; i < links.length; i++) {
+      var href = links[i].getAttribute('href') || '';
+      if (href.indexOf(needle) >= 0 && href !== value) links[i].setAttribute('href', value);
+    }
+  }
+
   function eachField(cb) {
     if (!SPEC || !SPEC.groups) return;
     SPEC.groups.forEach(function (g) { (g.fields || []).forEach(cb); });
@@ -89,6 +113,7 @@
     eachField(function (f) {
       if (f.type === 'image') applyImage(f);
       else if (f.type === 'text') applyText(f);
+      else if (f.type === 'url') applyUrl(f);
     });
     applied = true;
   }
