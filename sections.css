@@ -6,9 +6,9 @@
 .nbs-wrap { position: relative; z-index: 1; }
 
 .nbs {
-  background: #000;
+  background: #E6E7E6;
   padding: 54px 20px;
-  border-top: 1px solid rgba(203, 253, 81, .18);
+  border-top: 1px solid rgba(184,152,232,.18);
 }
 .nbs__inner { max-width: 1056px; margin: 0 auto; }
 
@@ -18,27 +18,27 @@
   font-family: 'Space Mono', ui-monospace, monospace;
   font-size: 10px; font-weight: 700; letter-spacing: .14em;
   text-transform: uppercase;
-  color: #CBFD51;
-  border: 1px dashed rgba(203, 253, 81, .55);
+  color: #17696B;
+  border: 1px dashed rgba(184,152,232,.55);
   padding: 3px 9px;
   margin-bottom: 14px;
 }
 
 .nbs__title {
-  font-family: 'Anton', 'Roboto Mono', sans-serif;
-  font-size: clamp(28px, 8.5vw, 48px);
+  font-family: 'Audiowide',sans-serif;
+  font-size: clamp(21.84px, 6.63vw, 37.44px);
   line-height: .95;
   letter-spacing: .01em;
   text-transform: uppercase;
-  color: #fff;
+  color: #3C2C56;
   margin: 0 0 14px;
 }
 
 .nbs__body {
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Space Mono',ui-monospace,monospace;
   font-size: 15px;
   line-height: 1.62;
-  color: #c9c9c9;
+  color: #5E5070;
   margin: 0;
   max-width: 62ch;
   white-space: pre-line;      /* respeta los saltos que escriba el admin */
@@ -58,9 +58,9 @@
 .nbs__media {
   width: 100%;
   aspect-ratio: 4 / 3;
-  border: 3px solid #fff;
-  box-shadow: 8px 8px 0 rgba(203, 253, 81, .25);
-  background: #0c0c0c;
+  border: 3px solid #3C2C56;
+  box-shadow: 8px 8px 0 rgba(184,152,232,.25);
+  background: #F3F4F3;
   overflow: hidden;
 }
 .nbs__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -75,15 +75,15 @@
 @media (min-width: 760px) { .nbs__gallery { grid-template-columns: repeat(4, 1fr); } }
 .nbs__tile {
   aspect-ratio: 1 / 1;
-  border: 2px solid rgba(255, 255, 255, .85);
-  background: #0c0c0c;
+  border: 2px solid rgba(60,44,86,.85);
+  background: #F3F4F3;
   overflow: hidden;
 }
 .nbs__tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* ── CTA ────────────────────────────────────────────────────────────── */
 .nbs--cta .nbs__inner {
-  border: 2px dashed #CBFD51;
+  border: 2px dashed #9C7FD6;
   padding: 30px 22px;
   text-align: center;
 }
@@ -94,15 +94,15 @@
   margin-top: 20px;
   padding: 14px 26px;
   min-height: 48px;
-  background: #CBFD51;
-  color: #000 !important;
-  border: 2px solid #000;
-  box-shadow: 5px 5px 0 #EC5CCE;
-  font-family: 'Anton', 'Roboto Mono', sans-serif;
-  font-size: 18px; letter-spacing: .035em;
+  background: #B898E8;
+  color: #3C2C56 !important;
+  border: 2px solid #3C2C56;
+  box-shadow: 5px 5px 0 #D86BB5;
+  font-family: 'Audiowide',sans-serif;
+  font-size: 14.04px; letter-spacing: .035em;
   text-transform: uppercase; text-decoration: none;
   transition: transform .12s cubic-bezier(.22,.9,.3,1), box-shadow .12s cubic-bezier(.22,.9,.3,1);
 }
-.nbs__btn:active { transform: translate(4px, 4px); box-shadow: 1px 1px 0 #EC5CCE; }
+.nbs__btn:active { transform: translate(4px, 4px); box-shadow: 1px 1px 0 #D86BB5; }
 
 @media (prefers-reduced-motion: reduce) { .nbs__btn { transition: none; } }

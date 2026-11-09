@@ -4,8 +4,8 @@
    ácido, magenta, Anton + Space Mono, brackets y numeración de secciones. */
 
 :root {
-  --nb-lime: #CBFD51;
-  --nb-magenta: #EC5CCE;
+  --nb-lime: #9C7FD6;
+  --nb-magenta: #D86BB5;
   --nb-bar-h: 54px;
 }
 
@@ -28,7 +28,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 0 14px;
-  background: rgba(0, 0, 0, .92);
+  background: rgba(230,231,230,.92);
   backdrop-filter: saturate(140%) blur(8px);
   -webkit-backdrop-filter: saturate(140%) blur(8px);
   border-bottom: 2px solid var(--nb-lime);
@@ -38,11 +38,11 @@
 .nb-bar.is-visible { transform: translateY(0); }
 
 .nb-bar__mark {
-  font-family: 'Anton', 'Roboto Mono', sans-serif;
-  font-size: 17px;
+  font-family: 'Audiowide',sans-serif;
+  font-size: 13.26px;
   letter-spacing: .06em;
   text-transform: uppercase;
-  color: #fff;
+  color: #3C2C56;
   text-decoration: none;
   line-height: 1;
   white-space: nowrap;
@@ -86,7 +86,7 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: #000;
+  background: #E6E7E6;
   display: flex;
   flex-direction: column;
   opacity: 0;
@@ -109,7 +109,7 @@
   content: '';
   position: absolute; inset: 0;
   background-image: repeating-linear-gradient(
-    -45deg, rgba(203,253,81,.045) 0 1px, transparent 1px 9px);
+    -45deg, rgba(184,152,232,.045) 0 1px, transparent 1px 9px);
   pointer-events: none;
 }
 
@@ -119,8 +119,8 @@
   gap: 12px;
   padding: 0 14px;
   height: var(--nb-bar-h);
-  border-bottom: 2px dashed rgba(203,253,81,.5);
-  background: #000;
+  border-bottom: 2px dashed rgba(184,152,232,.5);
+  background: #E6E7E6;
   z-index: 2;
 }
 .nb-panel__kicker {
@@ -130,7 +130,7 @@
 }
 .nb-close {
   background: transparent; border: 0; cursor: pointer;
-  color: #fff;
+  color: #3C2C56;
   font-family: 'Space Mono', ui-monospace, monospace;
   font-size: 11px; font-weight: 700; letter-spacing: .12em;
   padding: 12px 4px 12px 12px;
@@ -150,7 +150,7 @@
   display: flex; align-items: baseline; gap: 14px;
   text-decoration: none;
   padding: 9px 0;
-  border-bottom: 1px solid rgba(255,255,255,.1);
+  border-bottom: 1px solid rgba(60,44,86,.1);
   /* Visible por defecto: el contenido NUNCA depende de que la animación
      corra. La entrada escalonada es solo un realce cuando el panel abre. */
 }
@@ -165,12 +165,12 @@
   color: var(--nb-lime); flex: none; width: 22px;
 }
 .nb-link__t {
-  font-family: 'Anton', 'Roboto Mono', sans-serif;
-  font-size: clamp(30px, 10.5vw, 54px);
+  font-family: 'Audiowide',sans-serif;
+  font-size: clamp(23.4px, 8.19vw, 42.12px);
   line-height: .98;
   letter-spacing: .01em;
   text-transform: uppercase;
-  color: #fff;
+  color: #3C2C56;
   transition: color .18s linear, transform .22s cubic-bezier(.22,.9,.3,1);
 }
 .nb-link:hover .nb-link__t,
@@ -199,7 +199,7 @@
   padding: 7px 0;
   font-family: 'Space Mono', ui-monospace, monospace;
   font-size: 10px; font-weight: 700; letter-spacing: .18em;
-  color: #000; text-transform: uppercase;
+  color: #3C2C56; text-transform: uppercase;
   animation: nbMarquee 18s linear infinite;
 }
 @keyframes nbMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }

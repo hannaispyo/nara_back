@@ -1,13 +1,13 @@
 /* NARA BACK — modal "Agendar evento" + arreglo de botones Media Kit.
    Se monta en <body>, fuera de #wall. Extiende el lenguaje visual del sitio. */
 
-:root { --nb-lime: #CBFD51; --nb-magenta: #EC5CCE; }
+:root { --nb-lime: #9C7FD6; --nb-magenta: #D86BB5; }
 
 .nbk-modal {
   position: fixed; inset: 0; z-index: 10000;
   display: flex; align-items: flex-start; justify-content: center;
   padding: 24px 16px;
-  background: rgba(0, 0, 0, .72);
+  background: rgba(230,231,230,.72);
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
   opacity: 0; visibility: hidden;
   transition: opacity .22s ease, visibility 0s linear .22s;
@@ -21,16 +21,16 @@
 .nbk-dialog {
   width: 100%; max-width: 520px;
   margin: auto;
-  background: #000;
+  background: #E6E7E6;
   border: 3px solid var(--nb-lime);
-  box-shadow: 10px 10px 0 rgba(203, 253, 81, .18);
+  box-shadow: 10px 10px 0 rgba(184,152,232,.18);
   padding: 0;
 }
 
 .nbk-head {
   display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
   padding: 18px 18px 14px;
-  border-bottom: 2px dashed rgba(203, 253, 81, .5);
+  border-bottom: 2px dashed rgba(184,152,232,.5);
 }
 .nbk-kicker {
   font-family: 'Space Mono', ui-monospace, monospace;
@@ -38,12 +38,12 @@
   color: var(--nb-lime); text-transform: uppercase; margin: 0 0 6px;
 }
 .nbk-title {
-  font-family: 'Anton', 'Roboto Mono', sans-serif;
-  font-size: clamp(28px, 8vw, 40px); line-height: .95;
-  letter-spacing: .01em; color: #fff; text-transform: uppercase; margin: 0;
+  font-family: 'Audiowide',sans-serif;
+  font-size: clamp(21.84px, 6.24vw, 31.2px); line-height: .95;
+  letter-spacing: .01em; color: #3C2C56; text-transform: uppercase; margin: 0;
 }
 .nbk-x {
-  flex: none; background: transparent; border: 0; cursor: pointer; color: #fff;
+  flex: none; background: transparent; border: 0; cursor: pointer; color: #3C2C56;
   font-family: 'Space Mono', ui-monospace, monospace;
   font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
   padding: 10px 4px 10px 12px;
@@ -58,10 +58,10 @@
   display: block;
   font-family: 'Space Mono', ui-monospace, monospace;
   font-size: 10px; font-weight: 700; letter-spacing: .1em;
-  color: #8a8a8a; text-transform: uppercase; margin-bottom: 6px;
+  color: #5E5070; text-transform: uppercase; margin-bottom: 6px;
 }
 .nbk-field input, .nbk-field select, .nbk-field textarea {
-  width: 100%; background: #0c0c0c; border: 1px solid #333; color: #fff;
+  width: 100%; background: #F3F4F3; border: 1px solid #333; color: #3C2C56;
   font-family: 'Space Mono', ui-monospace, monospace; font-size: 13px;
   padding: 12px 13px; outline: none;
 }
@@ -72,9 +72,9 @@
 .nbk-hp { position: absolute; left: -9999px; }
 
 .nbk-submit {
-  background: var(--nb-lime); border: 0; color: #000; cursor: pointer;
-  font-family: 'Anton', 'Roboto Mono', sans-serif;
-  font-size: 19px; letter-spacing: .03em; text-transform: uppercase;
+  background: var(--nb-lime); border: 0; color: #3C2C56; cursor: pointer;
+  font-family: 'Audiowide',sans-serif;
+  font-size: 14.82px; letter-spacing: .03em; text-transform: uppercase;
   padding: 15px 20px; width: 100%; margin-top: 3px;
 }
 .nbk-submit:disabled { opacity: .55; cursor: default; }
@@ -82,7 +82,7 @@
   font-family: 'Space Mono', ui-monospace, monospace;
   font-size: 12px; margin: 0; min-height: 16px; color: var(--nb-lime);
 }
-.nbk-status.err { color: #ff6b6b; }
+.nbk-status.err { color: #FF6B6B; }
 
 .nbk-modal a:focus-visible, .nbk-modal button:focus-visible,
 .nbk-modal input:focus-visible, .nbk-modal select:focus-visible, .nbk-modal textarea:focus-visible {
